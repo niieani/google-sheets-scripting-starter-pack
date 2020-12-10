@@ -15,16 +15,19 @@ export function googleAppsAdapter(
   return new Promise(function (resolve, reject) {
     try {
       const fullPath = buildFullPath(config.baseURL, config.url)
-      const request = UrlFetchApp.fetch(
-        buildURL(fullPath, config.params, config.paramsSerializer),
-        {
-          headers: config.headers,
-          method: (config.method ?? 'get').toLowerCase() as 'get' | 'post',
-          payload: config.data,
-        },
-      )
+      const fullUrl = buildURL(fullPath, config.params, config.paramsSerializer)
+
+      Logger.log(`Requesting: ${config.method ?? 'get'} ${fullUrl}`)
+
+      const request = UrlFetchApp.fetch(fullUrl, {
+        headers: config.headers,
+        method: (config.method ?? 'get').toLowerCase() as 'get' | 'post',
+        payload: config.data,
+      })
       const status = request.getResponseCode()
       const headers = request.getAllHeaders()
+
+      Logger.log(`Request status: ${status}`)
 
       const data =
         !config.responseType || config.responseType === 'text'
