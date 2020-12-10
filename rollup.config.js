@@ -6,6 +6,7 @@ import json from '@rollup/plugin-json'
 import nodePolyfills from 'rollup-plugin-node-polyfills'
 import alias from '@rollup/plugin-alias'
 import inject from '@rollup/plugin-inject'
+import replace from '@rollup/plugin-replace'
 import path from 'path'
 /** @typedef {import("rollup").RollupOptions} RollupOptions */
 /** @typedef {import("rollup").Plugin} RollupPlugin */
@@ -66,6 +67,14 @@ const config = {
     resolve({ browser: true, preferBuiltins: false }),
     json(),
     typescript(),
+    replace({
+      'module.exports': 'exports.__nested',
+      include: ['node_modules/**/axios/**/*'],
+    }),
+    replace({
+      module: 'exports.__nested',
+      include: ['node_modules/**/lodash/**/*'],
+    }),
     fixForGoogleAppsScript(),
   ],
 }
