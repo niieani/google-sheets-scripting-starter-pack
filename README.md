@@ -21,6 +21,7 @@ All of below technologies preconfigured to work with Google Apps Script:
 - Authenticate with your Google Account: `yarn google:login`
 - Ensure your Google account allows API access, by [switching it on](https://script.google.com/home/usersettings)
 - Create the linked Spreadsheet in your account: `yarn google:create --title "My new Spreadsheet"`
+- Move the `build/.clasp.json` file to the project directory (e.g. by running `mv build/.clasp.json .clasp.json`)
 - Publish the code after making changes using: `yarn google:publish`
 - Follow [Google's developer
   reference](https://developers.google.com/apps-script/reference/spreadsheet)

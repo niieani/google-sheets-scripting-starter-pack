@@ -9,7 +9,7 @@
   "scripts": {
     "build": "rollup --config rollup.config.mjs",
     "google:login": "clasp login",
-    "google:create": "clasp create --type sheets --rootDir 'build' && mv build/.clasp.json .clasp.json",
+    "google:create": "clasp create --type sheets --rootDir 'build'",
     "google:publish": "yarn build && clasp push",
     "google:open": "clasp open"
   },
