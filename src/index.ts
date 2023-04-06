@@ -1,4 +1,3 @@
-import { googleAppsAdapter } from './google-apps-interop/googleAppsAdapter'
 import { getColumnName } from './helpers'
 import axios from 'axios'
 
@@ -9,10 +8,7 @@ export function onOpen(e: any) {
 }
 
 export async function workflow() {
-  const client = axios.create({
-    responseType: 'json',
-    adapter: googleAppsAdapter,
-  })
+  const client = axios.create({ responseType: 'json' })
 
   try {
     const result = await client.get('https://ifconfig.co/json')

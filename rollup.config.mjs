@@ -8,6 +8,10 @@ import alias from '@rollup/plugin-alias'
 import inject from '@rollup/plugin-inject'
 import replace from '@rollup/plugin-replace'
 import path from 'path'
+import { fileURLToPath } from 'url'
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
+
 /** @typedef {import("rollup").RollupOptions} RollupOptions */
 /** @typedef {import("rollup").Plugin} RollupPlugin */
 
@@ -30,10 +34,11 @@ ${chunk.exports.map(mapExport).join('\n')}
   }
 }
 
-const emptyAdapterPath = path.resolve(
+const adaptersPath = path.resolve(
   __dirname,
-  'src/google-apps-interop/emptyAdapter.js',
+  'src/google-apps-interop/adapters.js',
 )
+const axiosPath = path.resolve(__dirname, 'node_modules/axios')
 
 /** @type {RollupOptions} */
 const config = {
@@ -49,12 +54,17 @@ const config = {
         // we don't need the 'axios/lib/adapters' because they're for Node and Browsers
         // but we're running in a Google Apps Script engine
         {
-          find: './adapters/xhr',
-          replacement: emptyAdapterPath,
+          find: '../adapters/adapters.js',
+          replacement: adaptersPath,
+        },
+        // resolving inner dependencies in axios isn't currently possible due to the way they setup package.json
+        {
+          find: 'axios/lib/core/buildFullPath',
+          replacement: `${axiosPath}/lib/core/buildFullPath.js`,
         },
         {
-          find: './adapters/http',
-          replacement: emptyAdapterPath,
+          find: 'axios/lib/helpers/buildURL',
+          replacement: `${axiosPath}/lib/helpers/buildURL.js`,
         },
       ],
     }),
@@ -64,16 +74,18 @@ const config = {
     // @ts-ignore upstream issue:
     nodePolyfills(),
     commonjs({ transformMixedEsModules: true }),
-    resolve({ browser: true, preferBuiltins: false }),
+    resolve({ browser: true, preferBuiltins: false, modulesOnly: true }),
     json(),
     typescript(),
     replace({
       'module.exports': 'exports.__nested',
       include: ['node_modules/**/axios/**/*'],
+      preventAssignment: true,
     }),
     replace({
       module: 'exports.__nested',
       include: ['node_modules/**/lodash/**/*'],
+      preventAssignment: true,
     }),
     fixForGoogleAppsScript(),
   ],

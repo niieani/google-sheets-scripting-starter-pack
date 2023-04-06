@@ -1,6 +1,6 @@
 import buildFullPath from 'axios/lib/core/buildFullPath'
 import buildURL from 'axios/lib/helpers/buildURL'
-import type { AxiosRequestConfig, AxiosPromise } from 'axios'
+import type { AxiosPromise, InternalAxiosRequestConfig } from 'axios'
 
 /**
  * We can't use the default 'axios/lib/adapters' because they're for Node
@@ -10,9 +10,9 @@ import type { AxiosRequestConfig, AxiosPromise } from 'axios'
  * used by 'jira.js'.
  */
 export function googleAppsAdapter(
-  config: AxiosRequestConfig,
+  config: InternalAxiosRequestConfig,
 ): AxiosPromise<any> {
-  return new Promise(function (resolve, reject) {
+  return new Promise((resolve, reject) => {
     try {
       const fullPath = buildFullPath(config.baseURL, config.url)
       const fullUrl = buildURL(fullPath, config.params, config.paramsSerializer)
@@ -20,7 +20,7 @@ export function googleAppsAdapter(
       Logger.log(`Requesting: ${config.method ?? 'get'} ${fullUrl}`)
 
       const request = UrlFetchApp.fetch(fullUrl, {
-        headers: config.headers,
+        headers: config.headers.toJSON(true) as Record<string, string>,
         method: (config.method ?? 'get').toLowerCase() as 'get' | 'post',
         payload: config.data,
       })
